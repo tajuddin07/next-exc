@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension B</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <style>
+        body{
+            background-color: dimgray;
+            
+        }
+        #input{
+            margin: 0 auto;
+            border-radius: 25px;
+            padding: 20px; 
+            width: 400px;
+            height: 150px;  
+            background-color: black;
+            text-align: center;
+            color: white;
+           
+        }
+        #ISSMap{
+            height: 517px ;
+            width: 100%;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id = 'input'>
+        <h1>Where is ISS</h1>
+        <input type="datetime-local" id="inp">
+        <input type="submit" onclick=submit()>
+    </div>
+    <br/>
+    <div id='ISSMap'></div><br/>
+    <script>
+        const tile_url="https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=ycrrBT9ePKhrJHAcm3Kf";
+        const attribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
+        var ISSIcon = L.icon
+            ({
+             iconUrl: 'sputnik.png',
+             iconSize: [50, 32],
+             iconAnchor: [25, 16],
+            });
+
+
+        const map = L.map(ISSMap).setView([0,0],3);
+        const tiles = L.tileLayer(
+            tile_url,
+            { attribution },
+            );
+        tiles.addTo(map);
+
+       async function submit()
+        {
+            var inputDate = Date.parse(document.getElementById('inp').value);
+            //console.log(inputDate);
+            const data = {inputDate};
+            var loc=[];
+            const option = {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+           
+           const response = await fetch('/api',option);
+           const json= await response.json();
+           //console.log(json);
+           var api_param = json.parameter;
+           console.log(api_param);
+           // });
+
+            $(document).ready( function() {
+                 $.ajax({
+                url: "https://api.wheretheiss.at/v1/satellites/25544/positions?timestamps="+api_param,
+                type: "GET",
+                success:function(data){
+                  //console.log(data);
+
+                        //loop assigning marker
+                        $.each( data, function( key, value ) {
+                        console.log(data);
+                        var NormalDate = new Date(value.timestamp);
+                        var i = parseInt(key)+1;
+                        
+                        var popup = i+" "+
+                            NormalDate.getDate()+
+                            "/"+(NormalDate.getMonth()+1)+
+                             "/"+NormalDate.getFullYear()+
+                             " "+NormalDate.getHours()+
+                            ":"+NormalDate.getMinutes()+
+                            ":"+NormalDate.getSeconds()+'<br>'+
+                            "<input type =button onClick="+ weather(value.latitude,value.longitude,value.timestamp)+">Weather</input>";
+                    
+                           
+                    L.marker([value.latitude,value.longitude],{icon:ISSIcon}).bindPopup(popup).addTo(map);
+
+                },
+                 )
+                },
+                error:function(error){console.log(error) }
+                    })
+             })
+
+           
+        }
+
+
+       
+          function weather(lat,lng,timest)
+         {
+            
+             var q = lat+','+lng;
+             var t= timest;
+             console.log(q+' '+t);
+             
+              $(document).ready( function() {
+            $.ajax({
+                url: 'http://api.weatherapi.com/v1/current.json?key=981e0ba7e1fd4627a1380438211612&q='+q+"unixend_dt"+t,
+                type: "GET",
+                success:function(data){
+                  //console.log(data);
+
+                        //loop assigning marker
+                        $.each( data, function( key, value ) {
+                        alert('Weather here'+ value.temp_C)
+                        
+                },
+                 )
+                },
+                error:function(error){console.log(error) }
+                    })
+             })
+           
+    
+           
+        }
+    </script>
+</body>
+</html>
