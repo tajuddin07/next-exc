@@ -88,7 +88,7 @@
        async function submit()
         {
             var inputDate = Date.parse(document.getElementById('inp').value);
-            //console.log(inputDate);
+            
             const data = {inputDate};
             var loc=[];
             const option = {
@@ -101,13 +101,9 @@
            
            const response = await fetch('/api',option);
            const json= await response.json();
-           //console.log(json);
+          
            var api_param = json.parameter;
-           //console.log(api_param);
-        //    var button = document.createElement('button');
-        //     button.innerHTML = " Temperature";
-        
-           // });
+          
 
            
         
@@ -116,7 +112,7 @@
                 url: "https://api.wheretheiss.at/v1/satellites/25544/positions?timestamps="+api_param,
                 type: "GET",
                 success:function(data){
-                  //console.log(data);
+                  
 
                         //loop assigning marker
                         $.each( data, function( key, value ) {
@@ -150,25 +146,6 @@
         }
 
        
-
-        // document.getElementById("btn").addEventListener("click",
-        //       function() {
-        //         
-        //     }); 
-           
-        // button.addEventListener ("click", 
-        // function() {
-        //  alert("did something");
-        // });
-       
-        //   function weather(lat,lng,timest)
-        //  {
-            
-            
-           
-    
-           
-        // }
     </script>
 </body>
 </html>
