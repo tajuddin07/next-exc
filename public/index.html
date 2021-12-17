@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extension B</title>
+    <title>Extension C</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
@@ -62,6 +62,29 @@
             );
         tiles.addTo(map);
 
+        function weather(lat,lon)
+           {
+            var lati = lat;
+            var long = lon;
+            
+             console.log(lati+' '+long);
+             
+              $(document).ready( function() {
+            $.ajax({
+                url: 'http://api.openweathermap.org/data/2.5/weather?lat='+lati+'&lon='+long+'&appid=7b1b443cf1b71f11a0c83cabb7b1df79',
+                type: "GET",
+                success:function(data){
+
+                    console.log(data.main);
+                    alert(
+                        "Temperature here is :"+data.main.temp+" .F With humidity : "+data.main.humidity
+                        );
+                 
+                },
+                error:function(error){console.log(error) }
+                    })
+             })
+           }
        async function submit()
         {
             var inputDate = Date.parse(document.getElementById('inp').value);
@@ -80,9 +103,14 @@
            const json= await response.json();
            //console.log(json);
            var api_param = json.parameter;
-           console.log(api_param);
+           //console.log(api_param);
+        //    var button = document.createElement('button');
+        //     button.innerHTML = " Temperature";
+        
            // });
 
+           
+        
             $(document).ready( function() {
                  $.ajax({
                 url: "https://api.wheretheiss.at/v1/satellites/25544/positions?timestamps="+api_param,
@@ -95,7 +123,9 @@
                         console.log(data);
                         var NormalDate = new Date(value.timestamp);
                         var i = parseInt(key)+1;
-                        
+                        var lat = value.latitude;
+                        var lon = value.longitude
+                       
                         var popup = i+" "+
                             NormalDate.getDate()+
                             "/"+(NormalDate.getMonth()+1)+
@@ -103,7 +133,8 @@
                              " "+NormalDate.getHours()+
                             ":"+NormalDate.getMinutes()+
                             ":"+NormalDate.getSeconds()+'<br>'+
-                            "<input type =button onClick="+ weather(value.latitude,value.longitude,value.timestamp)+">Weather</input>";
+                            "<button id='btn' onclick='weather("+value.latitude+","+value.longitude+")'>Weather</button>";
+                           
                     
                            
                     L.marker([value.latitude,value.longitude],{icon:ISSIcon}).bindPopup(popup).addTo(map);
@@ -115,39 +146,29 @@
                     })
              })
 
-           
+            
         }
 
-
        
-          function weather(lat,lng,timest)
-         {
-            
-             var q = lat+','+lng;
-             var t= timest;
-             console.log(q+' '+t);
-             
-              $(document).ready( function() {
-            $.ajax({
-                url: 'http://api.weatherapi.com/v1/current.json?key=981e0ba7e1fd4627a1380438211612&q='+q+"unixend_dt"+t,
-                type: "GET",
-                success:function(data){
-                  //console.log(data);
 
-                        //loop assigning marker
-                        $.each( data, function( key, value ) {
-                        alert('Weather here'+ value.temp_C)
-                        
-                },
-                 )
-                },
-                error:function(error){console.log(error) }
-                    })
-             })
+        // document.getElementById("btn").addEventListener("click",
+        //       function() {
+        //         
+        //     }); 
+           
+        // button.addEventListener ("click", 
+        // function() {
+        //  alert("did something");
+        // });
+       
+        //   function weather(lat,lng,timest)
+        //  {
+            
+            
            
     
            
-        }
+        // }
     </script>
 </body>
 </html>
